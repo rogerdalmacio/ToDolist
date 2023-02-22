@@ -13,8 +13,16 @@ class showTodoTest extends TestCase
      */
     public function test_example(): void
     {
+
+        $response = $this->post('/api/login', [
+            'email' => 'nernser@example.net',
+            'password' => 'password'
+        ]);
+
+        $token = $response->json(['token']);
+
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer '. '46|FlCLctbUvj3fRIiPNI2aGVANlqxpC9HHI9BujDNa',
+            'Authorization' => 'Bearer '. $token,
         ])->get('/api/todo/5'); // add todo id in the url eg. /api/todo/{id}
 
         $response->assertStatus(200);

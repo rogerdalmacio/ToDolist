@@ -6,25 +6,24 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
-class showAllTodoTest extends TestCase
+class registerTest extends TestCase
 {
     /**
      * A basic feature test example.
      */
     public function test_example(): void
     {
-
-        $response = $this->post('/api/login', [
-            'email' => 'nernser@example.net',
+        $response = $this->post('/api/register',[
+            'name' => 'testUser',
+            'email' => 'testemail@gmail.com',
             'password' => 'password'
         ]);
 
         $token = $response->json(['token']);
 
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer '. $token,
-        ])->get('/api/todo');
+        $response->assertStatus(201)
+            ->assertJsonCount(2)
+            ->assertJsonFragment(['name' => $response->json(['name'])]);
 
-        $response->assertStatus(200);
     }
 }
