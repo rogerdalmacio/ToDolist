@@ -23,7 +23,7 @@ class deleteTodoTest extends TestCase
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '. $token,
-        ])->delete('/api/todo'); // add todo id in the url eg. /api/todo/{id}
+        ])->delete('/api/todo/6'); // add todo id in the url eg. /api/todo/{id}
 
         $response->assertStatus(202)
             ->assertJsonFragment([

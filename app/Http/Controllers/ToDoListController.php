@@ -3,11 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\ToDoList;
+use App\Services\ToDoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ToDoListController extends Controller
 {
+
+    protected $toDoService;
+
+    public function __construct(ToDoService $toDoService)
+    {
+        $this->toDoService = $toDoService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -16,10 +25,10 @@ class ToDoListController extends Controller
 
         $user = Auth::user();
         
-        $todolist = ToDoList::where('user_id', $user->id)->get();
+        $todolist = $this->toDoService->getToDos($user->id);
 
         $response = [
-            'To do lists' => $todolist
+            'To do' => $todolist
         ];
 
         return response($response, 200);
@@ -39,11 +48,17 @@ class ToDoListController extends Controller
             'todo' => 'required|string',
         ]);
 
-        $todo = ToDoList::create([
-            'user_id' => $user->id,
-            'title' => $request['title'],
-            'todo' => $request['todo'],
-        ]);
+        $todo = $this->toDoService->addToDo($user->id, $request['title'], $request['todo']);
+
+        if(!$todo) {
+
+            $response = [
+                'Error'
+            ];
+
+            return response($response, 404);
+
+        }
 
         $response = [
             'To do successfully added'
@@ -58,7 +73,7 @@ class ToDoListController extends Controller
      */
     public function show(string $id)
     {
-        $todo = ToDoList::find($id);
+        $todo = $this->toDoService->showTodo($id);
 
         $response = [
             'To do' => $todo
@@ -78,12 +93,17 @@ class ToDoListController extends Controller
             'todo' => 'required|string'
         ]);
 
-        $todo = ToDoList::find($id);
+        $todo = $this->toDoService->updateTodo($id, $request['title'], $request['todo']);
 
-        $todo->update([
-            'title' => $request['title'],
-            'todo' => $request['todo']
-        ]);
+        if(!$todo) {
+
+            $response = [
+                'Error'
+            ];
+
+            return response($response, 404);
+
+        }
 
         $response = [
             'To do successfully updated'
@@ -101,15 +121,13 @@ class ToDoListController extends Controller
 
         $user = Auth::user();
         
-        $todo = ToDoList::find($id);
+        $todo = $this->toDoService->deleteTodo($id, $user->id);
 
-        if($todo->user_id != $user->id) {
+        if(!$todo) {
 
             return response(['Restricted'], 404);
 
         }
-
-        $todo->delete();
 
         $response = [
             'To do successfully deleted'
