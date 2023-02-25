@@ -32,5 +32,7 @@ class updateTodoTest extends TestCase
         ->assertJsonFragment([
             'To do successfully updated'
         ]);
+
+        $this->assertFalse($response->getStatusCode() == '500');
     }
 }

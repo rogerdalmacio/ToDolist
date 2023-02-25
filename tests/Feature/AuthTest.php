@@ -6,6 +6,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Testing\AssertableJsonString;
 
 class AuthTest extends TestCase
 {
@@ -25,5 +26,16 @@ class AuthTest extends TestCase
             ->assertJsonFragment([
                 'name' => 'Delilah Beahan'
             ]);
+
+        $response->assertJson(fn (AssertableJson $json) =>
+            $json->hasAll('name','token')
+                ->whereAllType([
+                    'name' => 'string',
+                    'token' => 'string'
+                ])
+        );
+
+        $this->assertFalse($response->json()['name'] == 'James Smith');
+        $this->assertFalse($response->getStatusCode() == '500');
     }
 }

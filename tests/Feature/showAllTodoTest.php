@@ -26,5 +26,7 @@ class showAllTodoTest extends TestCase
         ])->get('/api/todo');
 
         $response->assertStatus(200);
+
+        $this->assertFalse($response->getStatusCode() == '500');
     }
 }

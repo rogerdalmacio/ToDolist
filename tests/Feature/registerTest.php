@@ -14,8 +14,8 @@ class registerTest extends TestCase
     public function test_example(): void
     {
         $response = $this->post('/api/register',[
-            'name' => 'testUser',
-            'email' => 'testemail@gmail.com',
+            'name' => 'testing11',
+            'email' => 'testing11email@gmail.com',
             'password' => 'password'
         ]);
 
@@ -24,6 +24,8 @@ class registerTest extends TestCase
         $response->assertStatus(201)
             ->assertJsonCount(2)
             ->assertJsonFragment(['name' => $response->json(['name'])]);
+
+        $this->assertFalse($response->getStatusCode() == '500');
 
     }
 }
